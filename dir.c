@@ -82,11 +82,12 @@ unsigned long ls(char* path){
   }
 
   print_filesize(size);
-  printf("%lu", size);
+  //printf("%lu", size);
   return size;   
   
 }
 
 int main(){
     ls(".");
+    return 0;
 }

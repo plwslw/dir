@@ -1,5 +1,5 @@
 dir: dir.c
-	gcc -o dir dir.c -I
+	gcc -o dir dir.c
 
-run: all
+run: dir
 	./dir
