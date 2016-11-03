@@ -18,16 +18,22 @@ You will write a program that will gather various information about a directory,
         Print out the size in a more readable format (like using KB, MB, GB for -byte prefixes)
 */
 
-int main(){
+char* filesize(int bytes){}
+
+DIR* ls(char* path){
   DIR *dir;
   struct dirent *entry;
-  struct dirent **files;
-  struct dirent **directories;
-
-  if ((dir = opendir(".")) == NULL)
+  
+  if ((dir = opendir(path)) == NULL)
     print("%s", strerror(errno));
-
-  while (entry=readdir(dir) != NULL){
     
+//we first look only for directories
+  while (entry=readdir(dir) != NULL){//while entry exists
+    if (opendir(entry.d_name) )
 	 
+}
+
+int main(){
+    ls(".");
+}
 }
