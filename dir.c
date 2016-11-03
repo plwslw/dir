@@ -1,8 +1,9 @@
 #include<stdio.h>
 #include<string.h>
 #include<dirent.h>
-#include<string.h>
+#include<unistd.h>
 #include<sys/types.h>
+#include<sys/stat.h>
 #include<errno.h>
 
 /*
@@ -18,22 +19,74 @@ You will write a program that will gather various information about a directory,
         Print out the size in a more readable format (like using KB, MB, GB for -byte prefixes)
 */
 
-char* filesize(int bytes){}
+void print_filesize(unsigned long bytes){
+  printf("size = ");
+  if (bytes<1024){
+    printf("%lu Bytes \n", bytes); 
+    return;
+  }
+  bytes/=1024;
+  if (bytes<1024){
+    printf("%lu KB \n", bytes);
+    return;
+  }
+  bytes/=1024;
+  if (bytes<1024){
+    printf("%lu MB \n", bytes);
+    return;
+  }
+  bytes/=1024;
+  printf("%lu GB \n", bytes);
+  return;
+    
+}
 
-DIR* ls(char* path){
+//Prints out a list of the contents of the directory
+//Assumes the directory contains only files and directories.
+//returns the size of the directory or -1 if there is an error
+unsigned long ls(char* path){
+  printf("Stats for directory %s\n", path);
+  
   DIR *dir;
   struct dirent *entry;
+  if ((dir = opendir(path)) == NULL){
+    printf("%s \n", strerror(errno));
+    printf("terminating ls \n");
+    return -1;
+  }
+
+
+  printf("Directories \n");
+  DIR *tmp;
+  //we first look only for directories
+  while ((entry=readdir(dir)) != NULL){//while entry exists
+    tmp = opendir(entry->d_name);
+    if (tmp!=NULL) //only true if entry is a directory
+      printf("\t %s \n", entry->d_name);
+  }
+
   
-  if ((dir = opendir(path)) == NULL)
-    print("%s", strerror(errno));
-    
-//we first look only for directories
-  while (entry=readdir(dir) != NULL){//while entry exists
-    if (opendir(entry.d_name) )
-	 
+  struct stat stats;
+  unsigned long size=0; //# bytes
+
+  dir=opendir(path); //restarts dir
+  printf("Regular files \n");
+  //now we look only for regular files
+  while ((entry=readdir(dir)) != NULL){
+    tmp = opendir(entry->d_name);
+    if (tmp==NULL){ //true if entry is not a directory.
+      printf("\t %s \n", entry->d_name);
+      stat(entry->d_name, &stats);
+      size+=(unsigned long)stats.st_size;
+    }
+  }
+
+  print_filesize(size);
+  printf("%lu", size);
+  return size;   
+  
 }
 
 int main(){
     ls(".");
-}
 }
